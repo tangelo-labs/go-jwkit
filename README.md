@@ -1,7 +1,7 @@
 #  JWKit
 
-[![go test](https://github.com/tangelo-labs/go-jwkit/actions/workflows/go-test.yml/badge.svg)](https://github.com/tangelo-labs/go-jwkit/actions/workflows/go-test.yml)
-[![golangci-lint](https://github.com/tangelo-labs/go-jwkit/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/tangelo-labs/go-jwkit/actions/workflows/golangci-lint.yml)
+[![go test](https://github.com/tangelo-labs/go-jwkit/actions/workflows/go-test.yml/badge.svg?branch=main)](https://github.com/tangelo-labs/go-jwkit/actions/workflows/go-test.yml)
+[![golangci-lint](https://github.com/tangelo-labs/go-jwkit/actions/workflows/golangci-lint.yml/badge.svg?branch=main)](https://github.com/tangelo-labs/go-jwkit/actions/workflows/golangci-lint.yml)
 
 This package moves around a "Toolkit" concept, which acts as an all-in-one solution
 for JWT-related tasks. It provides utilities for creating, parsing, and
