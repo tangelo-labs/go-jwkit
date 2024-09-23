@@ -110,6 +110,8 @@ func (c *Toolkit) Fetch(ctx context.Context, url string, options ...FetchOption)
 		return uErr
 	}
 
+	pairs := make([]KeyPair, 0)
+
 	for i := 0; i < n; i++ {
 		if key, ok := set.Get(i); ok {
 			pair, pErr := c.jwkToPair(key)
@@ -118,14 +120,11 @@ func (c *Toolkit) Fetch(ctx context.Context, url string, options ...FetchOption)
 			}
 
 			pair.Metadata["source"] = url
-
-			if rErr := c.RegisterKeyPair(ctx, pair); rErr != nil {
-				return rErr
-			}
+			pairs = append(pairs, pair)
 		}
 	}
 
-	return nil
+	return c.RegisterKeyPair(ctx, pairs...)
 }
 
 func (c *Toolkit) RefreshInterval(ctx context.Context, url string, d time.Duration) error {
@@ -167,42 +166,43 @@ func (c *Toolkit) RefreshInterval(ctx context.Context, url string, d time.Durati
 	return nil
 }
 
-// RegisterKeyPair registers a new key pair in the toolkit. It may return an
-// error if the key ID is already registered or if the key pair is invalid.
-func (c *Toolkit) RegisterKeyPair(_ context.Context, pair KeyPair) error {
+// RegisterKeyPair registers a new key pair in the toolkit.
+func (c *Toolkit) RegisterKeyPair(_ context.Context, pairs ...KeyPair) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if err := pair.validate(); err != nil {
-		return err
-	}
-
-	if pair.Metadata == nil {
-		pair.Metadata = map[string]string{}
-	}
-
-	if c.pairs[pair.ID] == nil {
-		c.pairs[pair.ID] = []KeyPair{}
-	}
-
-	c.pairs[pair.ID] = append(c.pairs[pair.ID], pair)
-
-	if pair.VerifyKey != nil {
-		key, err := pair.verKey()
-		if err != nil {
+	for i := range pairs {
+		if err := pairs[i].validate(); err != nil {
 			return err
 		}
 
-		c.publicKeys.Add(key)
-	}
-
-	if pair.SigningKey != nil {
-		key, err := pair.signKey()
-		if err != nil {
-			return err
+		if pairs[i].Metadata == nil {
+			pairs[i].Metadata = map[string]string{}
 		}
 
-		c.privateKeys.Add(key)
+		if c.pairs[pairs[i].ID] == nil {
+			c.pairs[pairs[i].ID] = []KeyPair{}
+		}
+
+		c.pairs[pairs[i].ID] = append(c.pairs[pairs[i].ID], pairs[i])
+
+		if pairs[i].VerifyKey != nil {
+			key, err := pairs[i].verKey()
+			if err != nil {
+				return err
+			}
+
+			c.publicKeys.Add(key)
+		}
+
+		if pairs[i].SigningKey != nil {
+			key, err := pairs[i].signKey()
+			if err != nil {
+				return err
+			}
+
+			c.privateKeys.Add(key)
+		}
 	}
 
 	c.unsafeRebuildVerifiers()
@@ -243,16 +243,16 @@ func (c *Toolkit) SigningKeys(_ context.Context) Keys {
 // no key is available, the token will be signed using the `none` method, and
 // thus verification/signing will always fail.
 func (c *Toolkit) NewToken(_ context.Context) *Builder {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
 	var (
 		sm  stdjwt.SigningMethod = stdjwt.SigningMethodNone
 		kid string
 	)
 
 	if l := len(c.signers); l > 0 {
+		c.mu.RLock()
 		sig := c.signers[rand.Intn(l)]
+		c.mu.RUnlock()
+
 		sm = sig.method
 		kid = sig.kid
 	}
