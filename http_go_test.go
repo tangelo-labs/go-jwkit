@@ -29,7 +29,7 @@ func TestNewHTTPMiddleware(t *testing.T) {
 
 		var interceptedToken *jwkit.Token
 
-		handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		handler := http.HandlerFunc(func(_ http.ResponseWriter, req *http.Request) {
 			tkn, fErr := jwkit.TokenFromContext(req.Context())
 			interceptedToken = tkn
 

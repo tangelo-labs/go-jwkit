@@ -21,9 +21,10 @@ func TestConnectUnaryInterceptor(t *testing.T) {
 		interceptor := jwkit.NewConnectInterceptor(tk)
 
 		var handlerToken *jwkit.Token
+
 		var handlerErr error
 
-		unaryHandler := func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+		unaryHandler := func(ctx context.Context, _ connect.AnyRequest) (connect.AnyResponse, error) {
 			handlerToken, handlerErr = jwkit.TokenFromContext(ctx)
 
 			return connect.NewResponse(&emptypb.Empty{}), nil
@@ -57,9 +58,10 @@ func TestConnectUnaryInterceptor(t *testing.T) {
 		interceptor := jwkit.NewConnectInterceptor(tkOne)
 
 		var handlerToken *jwkit.Token
+
 		var handlerErr error
 
-		unaryHandler := func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+		unaryHandler := func(ctx context.Context, _ connect.AnyRequest) (connect.AnyResponse, error) {
 			handlerToken, handlerErr = jwkit.TokenFromContext(ctx)
 
 			return connect.NewResponse(&emptypb.Empty{}), nil
