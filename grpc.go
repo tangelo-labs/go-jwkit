@@ -11,13 +11,13 @@ import (
 
 // NewGRPCUnaryInterceptor builds a gRPC unary interceptor that extracts the JWT
 // token from incoming request headers and stores it in the context. It uses
-// the provided KeyFunc to validate the token.
+// the provided Toolkit to validate the token.
 //
 // If the token is found but not valid, the interceptor will store the invalid
 // token in the context. You can use the token's [Token.Valid] field to check
 // if the token is valid or not.
 //
-// Providing a nil KeyFunc will disable this interceptor.
+// Providing a nil Toolkit will disable this interceptor.
 //
 // This interceptor expects the token to be in the `authorization` header in the
 // RFC 6750 format, example:
