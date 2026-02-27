@@ -20,7 +20,7 @@ func TestGRPCUnaryInterceptor(t *testing.T) {
 		tk := jwkit.NewTestToolkit(t, 1)
 		interceptor := jwkit.NewGRPCUnaryInterceptor(tk)
 		unaryInfo := &grpc.UnaryServerInfo{FullMethod: "TestService.UnaryMethod"}
-		unaryHandler := func(ctx context.Context, req any) (any, error) {
+		unaryHandler := func(ctx context.Context, _ any) (any, error) {
 			return jwkit.TokenFromContext(ctx)
 		}
 
@@ -56,7 +56,7 @@ func TestGRPCUnaryInterceptor(t *testing.T) {
 		tkTwo := jwkit.NewTestToolkit(t, 1)
 		interceptor := jwkit.NewGRPCUnaryInterceptor(tkOne)
 		unaryInfo := &grpc.UnaryServerInfo{FullMethod: "TestService.UnaryMethod"}
-		unaryHandler := func(ctx context.Context, req any) (any, error) {
+		unaryHandler := func(ctx context.Context, _ any) (any, error) {
 			return jwkit.TokenFromContext(ctx)
 		}
 

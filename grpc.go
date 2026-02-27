@@ -11,20 +11,20 @@ import (
 
 // NewGRPCUnaryInterceptor builds a gRPC unary interceptor that extracts the JWT
 // token from incoming request headers and stores it in the context. It uses
-// the provided KeyFunc to validate the token.
+// the provided Toolkit to validate the token.
 //
 // If the token is found but not valid, the interceptor will store the invalid
 // token in the context. You can use the token's [Token.Valid] field to check
 // if the token is valid or not.
 //
-// Providing a nil KeyFunc will disable this interceptor.
+// Providing a nil Toolkit will disable this interceptor.
 //
 // This interceptor expects the token to be in the `authorization` header in the
 // RFC 6750 format, example:
 //
 // `Authorization: Bearer <token>`.
 func NewGRPCUnaryInterceptor(tk *Toolkit) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		if tk == nil {
 			return handler(ctx, req)
 		}
@@ -42,7 +42,7 @@ func NewGRPCUnaryInterceptor(tk *Toolkit) grpc.UnaryServerInterceptor {
 
 // NewGRPCStreamInterceptor similar to NewGRPCUnaryInterceptor, but for server streams.
 func NewGRPCStreamInterceptor(tk *Toolkit) grpc.StreamServerInterceptor {
-	return func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv any, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if tk == nil {
 			return handler(srv, ss)
 		}

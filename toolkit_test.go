@@ -221,7 +221,7 @@ func Test_Toolkit_Fetch(t *testing.T) {
 		require.NoError(t, err)
 
 		fakeServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				_, wErr := w.Write([]byte(googleCerts))
 				require.NoError(t, wErr)
 			}),
@@ -249,7 +249,7 @@ func Test_Toolkit_Refresh(t *testing.T) {
 		serves := &atomic.Int32{}
 
 		fakeServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				_, wErr := w.Write([]byte(googleCerts))
 				require.NoError(t, wErr)
 
